@@ -5,6 +5,8 @@ NUM_REGISTER = 32
 SIZE_REGISTER = 32
 
 def register_file():
+    ONE32 = Constant("11111111111111111111111111111111")
+    ZERO32 = Constant("00000000000000000000000000000000")
     # input
     oa1 = Input(5)
     oa2 = Input(5)
@@ -13,28 +15,23 @@ def register_file():
     pc_in = Input(32)
 
     # registers
-    def get_register(i, j):
-        return lambda: reg[i][j]
-    pre_reg = [None] + [[Reg(Defer(1, get_register(i, j))) for j in range(SIZE_REGISTER)] for i in range(1, NUM_REGISTER)]
-    reg = [[Select(i, pc_in) for i in range(SIZE_REGISTER)]]
+    dummy_pc_in = pc_in & ONE32
+    reg = [Reg(Defer(32, lambda: dummy_pc_in))]
     update = demux1to32(Constant("1"), ia1)
     # update the registers
+    def get_pre_register(i):
+        return lambda: mux2to1(reg[i], data_in, Select(i, update))
     for i in range(1, NUM_REGISTER):
-        reg.append(b32mux2to1(pre_reg[i], data_in, update[i]))
-        # temp = union(b32mux2to1(pre_reg[i], data_in, update[i]))
-        # temp.set_as_output("reg" + str(i))
-        # temp2 = union(pre_reg[i])
-        # temp2.set_as_output("pre_reg" + str(i))
+        reg.append(Reg(Defer(32, get_pre_register(i))))
     # compute the output
-    pc_out = union(reg[0])
-    zero32 = [Constant("0")] * 32
-    out1 = union(b32mux32to1([zero32]+reg[1:], oa1))
-    out2 = union(b32mux32to1([zero32]+reg[1:], oa2))
+    out1 = mux32to1([ZERO32]+reg[1:], oa1)
+    out2 = mux32to1([ZERO32]+reg[1:], oa2)
 
     # output
-    pc_out.set_as_output("pc_out")
+    reg[0].set_as_output("pc_out")
     out1.set_as_output("out1")
     out2.set_as_output("out2")
 
 def main():
+    allow_ribbon_logic_operations(True)
     register_file()
