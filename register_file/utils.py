@@ -28,7 +28,7 @@ def dup32(b):
     return b
 
 def mux2to1(d0, d1, s):
-    return (d0&(~dup32(s)))|(d1&dup32(s))
+    return (And(d0,(~dup32(s))))|(And(d1,dup32(s)))
 
 def mux4to1(d, s):
     return mux2to1(mux2to1(d[0], d[1], Select(0, s)), mux2to1(d[2], d[3], Select(0, s)), Select(1, s))

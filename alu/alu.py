@@ -35,7 +35,7 @@ from alu.and_or_xor import *
 from alu.left_shift import *
 from alu.right_shift import *
 
-def alu(a, b, op):
+def alu_internal(a, b, op):
     assert(a.bus_size == 32)
     assert(b.bus_size == 32)
     assert(op.bus_size == 3)
@@ -66,10 +66,10 @@ def alu(a, b, op):
 
     return (s, f)
 
-def main():
-    a = Input(32)
-    b = Input(32)
-    op = Input(3)
+def alu(a, b, op):
+    #a = Input(32)
+    #b = Input(32)
+    #op = Input(3)
 
     constant.z_1 = Constant("0")
     constant.z_2 = Constant("00")
@@ -78,6 +78,7 @@ def main():
     constant.z_16 = Constant("0000000000000000")
     constant.z_32 = Constant("00000000000000000000000000000000")
 
-    (result, flag_z) = alu(a, b, op)
-    result.set_as_output("result")
-    flag_z.set_as_output("flag_z")
+    (result, flag_z) = alu_internal(a, b, op)
+    return (result, flag_z) 
+   #result.set_as_output("result")
+   #flag_z.set_as_output("flag_z")

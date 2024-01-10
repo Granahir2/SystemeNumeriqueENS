@@ -5,3 +5,4 @@ _build
 *.log
 *.out
 *.synctex.gz
+**/__pycache__

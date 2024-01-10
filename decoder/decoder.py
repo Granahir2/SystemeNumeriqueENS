@@ -1,6 +1,4 @@
 import sys
-sys.path.append("../sysnum-2023/carotte.py")
-
 from lib_carotte import *
 
 def sgnextend12(x):
@@ -21,7 +19,7 @@ def decoder(iw):
 	is_load   = ~iw[2] & ~iw[4] & ~iw[5] # We don't support anything else *now*
 	is_store  = ~iw[2] & ~iw[4] &  iw[5]
 	is_arithi = ~iw[2] &  iw[4] & ~iw[5]
-	is_arith  = ~iw[2] & ~iw[4] &  iw[5]
+	is_arith  = ~iw[2] &  iw[4] &  iw[5]
 	is_lui    =  iw[2] 
 
 	mux 	  = is_load
@@ -44,21 +42,21 @@ def decoder(iw):
 		regs_out1, regs_out2, regs_in,
 		alu_opc)
 
-def main():
-	allow_ribbon_logic_operations(True)
+#def main():
+#	allow_ribbon_logic_operations(True)
 
-	instruction_word = Input(32)
-	(mux, we, ram_width,
-	 imm, imm_en,
-	 regs_out1, regs_out2, regs_in,
-	 alu_opc) = decoder(instruction_word)
-
-	mux.set_as_output("mux")
-	we.set_as_output("we")
-	ram_width.set_as_output("width")
-	imm.set_as_output("imm")
-	imm_en.set_as_output("imm_en")
-	regs_out1.set_as_output("reg1")
-	regs_out2.set_as_output("reg2")
-	regs_in.set_as_output("regd")
-	alu_opc.set_as_output("alu")
+#	instruction_word = Input(32)
+#	(mux, we, ram_width,
+#	 imm, imm_en,
+#	 regs_out1, regs_out2, regs_in,
+#	 alu_opc) = decoder(instruction_word)
+#
+#	mux.set_as_output("mux")
+#	we.set_as_output("we")
+#	ram_width.set_as_output("width")
+#	imm.set_as_output("imm")
+#	imm_en.set_as_output("imm_en")
+#	regs_out1.set_as_output("reg1")
+#	regs_out2.set_as_output("reg2")
+#	regs_in.set_as_output("regd")
+#	alu_opc.set_as_output("alu")
