@@ -5,4 +5,6 @@ _build
 *.log
 *.out
 *.synctex.gz
-**/__pycache__
+*.net
+__pycache__/
+tests/*.bin
