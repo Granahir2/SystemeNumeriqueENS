@@ -2,7 +2,7 @@ import sys
 from lib_carotte import *
 
 def sgnextend12(x):
-	assert(x.bus_size == 12)
+#	assert(x.bus_size == 12)
 	return x + Mux(x[11], Constant("0"*20), Constant("1"*20))
 
 def decode_aluopc(inner_enc):
@@ -30,7 +30,7 @@ def decoder(iw):
 	regs_out2 = iw[15:20]
 	imm_en    = ~is_arith
 	imm	  = Mux(is_lui,
-			sgnextend12(Mux(is_store, iw[20:32], iw[25:32] + iw[7:12])),
+			sgnextend12(Mux(is_store, iw[20:32], iw[7:12] + iw[25:32])),
 			Constant("0"*12) + iw[12:32])
 	alu_opc_internal = Mux(is_arith | is_arithi,
 				Constant("0000"),

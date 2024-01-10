@@ -30,9 +30,13 @@ def main():
 
 	muxout = Mux(mux, alu_result, read_from_ram)
 
-	instruction_ROM.set_as_output("iw")	
+	imm_en.set_as_output("imm_en")
+	alu_in1.set_as_output("alu1")
+	alu_in2.set_as_output("alu2")
+
 	mux.set_as_output("load")
-	alu_in1.set_as_output("ALU1")
-	alu_in2.set_as_output("ALU2")
+	we.set_as_output("we")
+	write_to_ram.set_as_output("write_to_ram")
+	alu_result.set_as_output("ram_addr")
 	muxout.set_as_output("databus")
 	pc_out.set_as_output("pc")
