@@ -40,13 +40,13 @@ def mux32to1(d, s):
     return mux4to1([mux8to1(d[i:i+8], Slice(0, 3, s)) for i in range(0, 32, 8)], Slice(3, 5, s))
 
 def cmp(a, b):
-    # return two bits for a < b, a = b
+    # return two bits for b < a, a = b
     lt, eq = Constant("0"), Constant("1")
     for i in range(31, -1, -1):
         ai = Select(i, a)
         bi = Select(i, b)
-        lt = lt | (eq & (~ai) & bi)
+        lt = lt | (eq & ai & ~bi)
         eq = eq & (~(ai ^ bi))
-    lt.set_as_output("lt")
-    eq.set_as_output("eq1")
+    #lt.set_as_output("lt")
+    #eq.set_as_output("eq1")
     return (lt, eq)

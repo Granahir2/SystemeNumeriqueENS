@@ -15,10 +15,17 @@ def main():
 	ROM_addr = Slice(2, 18, Defer(32, lambda: pc_out)) # Since we have 32 bit words and 16 bit ROM total
 	instruction_ROM = ROM(16, 32, ROM_addr)
 
-	(mux, we, ram_width, imm, imm_en, oa1, oa2, ia1, alu_opc) = decoder.decoder(instruction_ROM)
+	(mux, we, ram_width,
+	imm, imm_en,
+	oa1, oa2, ia1,
+	alu_opc,
+	pc_override_com, pc_alu, save_pc, eqsel) = decoder.decoder(instruction_ROM)
 
-	(out1, out2, pc_out) = register_file.register_file(oa1, oa2, ia1, Defer(32, lambda: muxout), Defer(32, lambda: incr_pc))
-	incr_pc, c = ripple_carry_adder(pc_out, Constant("0"*29 + "100"), Constant("0"))
+	pc_override = Mux(pc_override_com[1], pc_override_com[0], pc_override_com[2] ^ Defer(1, lambda: eq))
+
+	(out1, out2, pc_out, eq) = register_file.register_file(oa1, oa2, ia1, Defer(32, lambda: muxout), Defer(32, lambda: incr_pc),
+								pc_override, pc_alu, save_pc, eqsel)
+	incr_pc, c = ripple_carry_adder(pc_out & Constant("1"*30 + "00"), Constant("0"*29 + "100"), Constant("0"))
 	# Using carry lookahead with defer mysteriously fails (netlist references _l_0 but doesn't declare it)
 
 	alu_in1 = Mux(imm_en, out1, imm)
@@ -30,7 +37,7 @@ def main():
 
 	muxout = Mux(mux, alu_result, read_from_ram)
 
-	imm_en.set_as_output("imm_en")
+	#imm_en.set_as_output("imm_en")
 	alu_in1.set_as_output("alu1")
 	alu_in2.set_as_output("alu2")
 
