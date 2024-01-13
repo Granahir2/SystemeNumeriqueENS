@@ -25,7 +25,7 @@ def main():
 	alu_in2 = out2
 	alu_result, _ = alu.alu(alu_in1, alu_in2, alu_opc)	
 
-	read_from_ram, write_to_ram = ram_interface.ram_interface(Defer(32, lambda: ramword), out1, ram_width)
+	read_from_ram, write_to_ram = ram_interface.ram_interface(Defer(32, lambda: ramword), out1, ram_width, alu_result[0:2])
 	ramword = RAM(16, 32, alu_result[2:18], we, alu_result[2:18], write_to_ram)	 
 
 	muxout = Mux(mux, alu_result, read_from_ram)

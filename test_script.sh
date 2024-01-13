@@ -1,4 +1,8 @@
 #!/bin/sh
-lcnt="wc -l ${1%.bin}.s"
 simpath=netlist_sim
-$simpath build.net -n$($lcnt) -r$1
+for f in $1
+do
+	echo "\033[32m" $f "======================\033[0m"
+	lcnt="wc -l ${f%.bin}.s"
+	$simpath build.net -n$($lcnt) -r$f
+done
