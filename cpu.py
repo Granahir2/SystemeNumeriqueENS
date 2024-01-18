@@ -16,7 +16,7 @@ def main():
 	ROM_addr = Slice(2, 18, Defer(32, lambda: pc_out)) # Since we have 32 bit words and 16 bit ROM total
 	instruction_ROM = ROM(16, 32, ROM_addr)
 
-	IRQ = Constant("0") # External interrupts are disabled
+	IRQ = Input(1) # External interrupts are disabled
 
 	(trigger, csrout) = interrupts.interrupts(IRQ, Defer(32, lambda: pc_out), Defer(32, lambda: alu_in2),
 						  Defer(32, lambda: alu_in1), Defer(1, lambda: csrwe)) 
