@@ -23,9 +23,11 @@ def decode_aluopc(inner_enc):
 	r = c + b + a
 	return Mux(inner_enc[3], r, Constant("010"))
 
-def decoder(iw):
-	assert(iw.bus_size == 32)
-	
+def decoder(iw_initial, it):	
+	assert(iw_initial.bus_size == 32)
+	iw = Mux(it, iw_initial, Constant("00000000010000000000000001100111"))
+	# hijack the instruction word and replace it with "JALR x0 4(x0)"
+
 	# Refer to p. 129 of RISCV docs
 	is_load   = ~iw[2] & ~iw[3] & ~iw[4] & ~iw[5] & ~iw[6]
 	is_store  = ~iw[2] & ~iw[3] & ~iw[4] &  iw[5] & ~iw[6]	
@@ -36,7 +38,10 @@ def decoder(iw):
 	is_jal    =  iw[2] &  iw[3] & ~iw[4] &  iw[5] &  iw[6]
 	is_jalr   =  iw[2] & ~iw[3] & ~iw[4] &  iw[5] &  iw[6]
 	is_branch = ~iw[2] & ~iw[3] & ~iw[4] &  iw[5] &  iw[6]
+	is_system = ~iw[2] & ~iw[3] &  iw[4] &  iw[5] &  iw[6]
 
+	sysmux    = is_system
+	csrwe	  = is_system
 	mux 	  = is_load
 	we  	  = is_store
 	ram_width = iw[12:15]
@@ -47,7 +52,7 @@ def decoder(iw):
 
 	(i,s,b,u,j) = decode_imms(iw)
 	imm_en    = ~is_arith
-	imm	  = Mux(is_lui | is_auipc,
+	imm	  = Mux(is_lui | is_auipc | is_system,
 			Mux(is_store,
 				Mux(is_jal,
 					Mux(is_branch, i, b),
@@ -66,7 +71,8 @@ def decoder(iw):
 	save_pc     = is_jal | is_jalr
 	eqsel	    = iw[14] # All LT are *unsigned*
 
-	return (mux, we, ram_width,
+	return (sysmux, csrwe,
+		mux, we, ram_width,
 		imm, imm_en,
 		regs_out1, regs_out2, regs_in,
 		alu_opc,

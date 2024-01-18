@@ -1,0 +1,8 @@
+pc = 0, trigger = 0, IE = 0, IF = 0, IRA = 0
+pc = 12, trigger = 0, IE = 0, IF = 0, IRA = 0
+pc = 16, trigger = 0, IE = 0, IF = 0, IRA = 0
+pc = 20, trigger = 0, IE = 0, IF = 0, IRA = 0
+pc = 24, trigger = 0, IE = 1, IF = 0, IRA = 0
+pc = 28, trigger = 1, IE = 1, IF = 1, IRA = 0
+pc = 4, trigger = 0, IE = 0, IF = 1, IRA = 28
+pc = 8, trigger = 0, IE = 0, IF = 1, IRA = 28
