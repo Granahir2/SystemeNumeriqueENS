@@ -18,8 +18,8 @@ def main():
 
 	IRQ = Input(1) # External interrupts are disabled
 
-	(trigger, csrout) = interrupts.interrupts(IRQ, Defer(32, lambda: pc_out), Defer(32, lambda: alu_in2),
-						  Defer(32, lambda: alu_in1), Defer(1, lambda: csrwe)) 
+	(trigger, csrout) = interrupts.interrupts(IRQ, Defer(32, lambda: pc_out), Defer(32, lambda: alu_in1),
+						  Defer(32, lambda: alu_in2), Defer(1, lambda: csrwe)) 
 
 	trigger.set_as_output("trigger")
 
@@ -37,8 +37,8 @@ def main():
 	incr_pc, c = ripple_carry_adder(pc_out & Constant("1"*30 + "00"), Constant("0"*29 + "100"), Constant("0"))
 	# Using carry lookahead with defer mysteriously fails (netlist references _l_0 but doesn't declare it)
 
-	alu_in1 = Mux(imm_en, out1, imm)
-	alu_in2 = out2
+	alu_in2 = Mux(imm_en, out1, imm)
+	alu_in1 = out2
 	alu_result, _ = alu.alu(alu_in1, alu_in2, alu_opc)	
 
 	read_from_ram, write_to_ram = ram_interface.ram_interface(Defer(32, lambda: ramword), out1, ram_width, alu_result[0:2])

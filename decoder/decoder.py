@@ -62,8 +62,10 @@ def decoder(iw_initial, it):
 	
 	alu_opc_internal = Mux(is_arith | is_arithi,
 				Constant("0000"), # add
-				(is_arith & iw[30]) + iw[12:15])
+				 iw[12:15] + (is_arith & iw[30]))
 	alu_opc = decode_aluopc(alu_opc_internal)
+
+	alu_opc.set_as_output("aluopc")
 
 	# pcoc[1] = do we branch conditionally ? pcoc[0] = do we branch unconditionally ? pcoc[2] = is the condition inverted
 	pc_override_com = (is_jal | is_jalr) + is_branch + iw[12]

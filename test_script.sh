@@ -11,7 +11,7 @@ do
 	fi
 	if [ -e ${f%.bin}.output ]
 	then
-		$simpath build.net -n$($lcnt) -i/dev/zero -r$f $options | diff -s -b - --label "build output on $f" ${f%.bin}.output
+		$simpath build.net -n$($lcnt) -i/dev/zero -r$f $options | diff -s -w - --label "build output on $f" ${f%.bin}.output
 	else
 		$simpath build.net -n$($lcnt) -i/dev/zero -r$f $options
 	fi

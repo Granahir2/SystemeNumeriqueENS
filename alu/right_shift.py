@@ -39,11 +39,11 @@ def n_srl(a, b):
         else:
             return or_accumulator(a[sz//2-1]) | or_accumulator(a[sz//2:])
 
-    a = Mux(b[4], right_shift_16(a), a)
-    a = Mux(b[3], right_shift_8(a), a)
-    a = Mux(b[2], right_shift_4(a), a)
-    a = Mux(b[1], right_shift_2(a), a)
-    a = Mux(b[0], right_shift_1(a), a)
-    a = Mux(or_accumulator(Constant("00000") + b), a, constant.z_32)
+    a = Mux(b[4], a, right_shift_16(a))#, a)
+    a = Mux(b[3], a, right_shift_8(a))#, a)
+    a = Mux(b[2], a, right_shift_4(a))#, a)
+    a = Mux(b[1], a, right_shift_2(a))#, a)
+    a = Mux(b[0], a, right_shift_1(a))#, a)
+    #a = Mux(or_accumulator(Constant("00000") + b), a, constant.z_32)
             
     return (a, ~or_accumulator(a))
