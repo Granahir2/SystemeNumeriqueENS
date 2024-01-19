@@ -6,27 +6,27 @@ import alu.constant as constant
 
 def left_shift_1(a):
     assert(a.bus_size == 32)
-    s = a[1:32] + constant.z_1
+    s = constant.z_1 + a[0:31]
     return s
 
 def left_shift_2(a):
     assert(a.bus_size == 32)
-    s = a[2:32] + constant.z_2
+    s = constant.z_2 + a[0:30]
     return s
 
 def left_shift_4(a):
     assert(a.bus_size == 32)
-    s = a[4:32] + constant.z_4
+    s = constant.z_4 + a[0:28]
     return s
 
 def left_shift_8(a):
     assert(a.bus_size == 32)
-    s = a[8:32] + constant.z_8
+    s = constant.z_8 + a[0:24]
     return s
 
 def left_shift_16(a):
     assert(a.bus_size == 32)
-    s = a[16:32] + constant.z_16
+    s = constant.z_16 + a[0:16]
     return s
 
 def n_sll(a, b):

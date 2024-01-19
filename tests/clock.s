@@ -7,18 +7,17 @@
 # x24: year % 400
 # x23: year % 100
 # x22: year % 4
+# x20: used for constant (e.g. 60, 24, 12, 400, 100, 4, ...)
+# x19: whether the year is leap or not
+
+
+jal x0, init
+WHILE: csrrw x0, 1, x0 # Reset IF. Note IE = 0 here
+
 # TODO: To load the time for the clock
 # x21: encode the number of days in each month
 # 0xAD5: the hexadecimal value of 1010 1101 0101 (1 for 31 days and 0 for 30 days)
 addi x21, x0, -1323
-# x20: used for constant (e.g. 60, 24, 12, 400, 100, 4, ...)
-# x19: whether the year is leap or not
-
-WHILE:
-xor x1, x1, x1
-lui x1, 1 # address to read the clock bit ( = 4096)
-lb x2, x1 # read the clock bit from ram
-beq x2, x0, WHILE # if the clock bit is off, repeat
 
 # increase second
 addi x30, x30, 1
@@ -58,7 +57,7 @@ addi x19, x19, 1 # x19 <- 1
 UPDATE_FEBRUARY:
 addi x20, x19, 28 # 28 + whether it is a leap year
 bne x27, x20, OUTPUT
-beq x0, x0, CON
+jal x0, CON
 # Deal with other months
 OTHER_MONTHS: 
 addi x1, x21, 0 # x1 <- x21
@@ -95,13 +94,74 @@ addi x22, x22, 1
 addi x20, x0, 4 # x20 <- 4
 bne x22, x20, OUTPUT
 xor x22, x22, x22
+jal x0, OUTPUT
+
+init: # Load all the values, initialise modulos
 
 # output to ram and loop
 OUTPUT:
-sb x30, 0(x0)
-sb x29, 1(x0)
-sb x28, 2(x0)
-sb x27, 3(x0)
-sb x26, 4(x0)
-sw x25, 8(x0)
-beq x0, x0, WHILE
+addi x1, x0, ':' # lay down :s
+sb x1, 2(x0)
+sb x1, 5(x0)
+
+addi x1, x30, 0 # print sec
+addi x2, x0,  6
+jal x3, print_2dg
+
+addi x1, x29, 0 # print min
+addi x2, x0,  3
+jal x3, print_2dg
+
+addi x1, x28, 0 # print hrs
+addi x2, x0,  0
+jal x3, print_2dg
+
+addi x1, x0, ' ' # lay down spacing and /
+sb x1, 8(x0)
+addi x1, x0, '/'
+sb x1, 11(x0)
+sb x1, 14(x0)
+
+addi x1, x27, 1 # print day, 1-indexed
+addi x2, x0, 9
+jal x3, print_2dg
+
+addi x1, x26, 1 # print month, 1-indexed
+addi x2, x0, 12
+jal x3, print_2dg
+
+addi x1, x25, 0 # print year
+addi x2, x0, 15
+jal x3, print_4dg 
+
+addi x1, x0, 1
+csrrw x0, 0, x1 # Set IE = 1
+busyloop: jal x0,busyloop
+
+print_2dg: # Expects value to print in x1, where to print in x2 and returns to x3
+	addi x4, x0, '0'
+	addi x5, x0, 10
+	loop: blt x1, x5, brk
+		addi x1, x1, -10
+		addi x4, x4,   1
+		jal x0, loop
+	brk: addi x1, x1, '0' # Now x1 holds the units and x4 the 10s
+	sb x4, 0(x2)
+	sb x1, 1(x2)
+	jalr x0, x3
+
+print_4dg: # Same
+	addi x4, x0, 0
+	addi x5, x0, 100
+	addi x7, x3, 0
+	l4: 	blt x1, x5, brk4
+		addi x1, x1, -100
+		addi x4, x4, 1
+		jal x0, l4
+	brk4: addi x6, x1, 0
+	addi x1, x4, 0 # on écrit les 100aines
+	jal  x3, print_2dg
+	addi x2, x2, 2 # on incrémente la place
+	addi x1, x6, 0 # puis les unités
+	jal  x3, print_2dg
+	jalr x0, x7
