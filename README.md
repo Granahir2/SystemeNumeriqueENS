@@ -7,7 +7,7 @@ The CPU is a RISCV rv32i compliant core with a few exceptions :
 - all load instructions are signed
 - comparisons on branches are always unsigned
 - right shifts are always logical
-- `SLT(U)` instructions are not supported
+- `SLT*` instructions are not supported
 - opcode `SYSTEM` only supports instructions `CSRRW`, used to access 3 CSRs : `IE` (CSR 0), `IF` (CSR 1), `IRA` (CSR 2).
 
 These are used to support interrupts according to the following logic : if, during a cycle, the IRQ input is
